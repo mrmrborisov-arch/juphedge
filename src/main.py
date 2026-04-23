@@ -137,8 +137,24 @@ the combination Jupiter did not explicitly design for.</p>
 
 <div id="out" class="card" style="display:none"></div>
 
+<div class="card">
+  <h3 style="margin:0 0 8px 0">Use it from your agent</h3>
+  <p style="margin:0 0 10px 0;color:#9aa0ac;font-size:13px">
+    juphedge is read-only. Your agent fetches a plan here, then executes legs via the normal Jupiter endpoints with user approval.
+  </p>
+  <pre style="background:#0a0d12;border:1px solid #232a33;border-radius:8px;padding:12px;overflow-x:auto;font-size:12px;color:#c5cad2"># Claude / Cursor / any MCP-capable agent
+curl -s 'https://juphedge-wunclset.fly.dev/api/analyze?wallet=&lt;solana-addr&gt;' \
+  | jq '.trigger_orders, .lend_sweep, .dca_plan, .prediction_hedge'
+
+# Then route each leg:
+# - trigger_orders[*]  → POST https://api.jup.ag/trigger/v1/create
+# - lend_sweep.target  → POST https://api.jup.ag/lend/v1/deposit
+# - dca_plan           → POST https://api.jup.ag/recurring/v1/create
+# - prediction_hedge   → POST https://api.jup.ag/prediction/v1/orders</pre>
+</div>
+
 <p class="footnote">
-  Backend: <a href="/docs">OpenAPI</a>. Source &amp; design notes: <a href="https://github.com/mrmrborisov-arch/juphedge">github</a>.
+  Backend: <a href="/docs">OpenAPI</a>. Source: <a href="https://github.com/mrmrborisov-arch/juphedge">github.com/mrmrborisov-arch/juphedge</a>.
   Jupiter APIs used: Price v3, Tokens v2, Trigger v2, Lend v1, Recurring v1, Prediction v1.
   No transactions are signed by this service — an agent consumer executes plan items.
 </p>
