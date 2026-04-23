@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.egg-info/
+*.pyc
+docs/
+llms.txt
+llms-full.txt
+.env
