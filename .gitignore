@@ -6,3 +6,10 @@ docs/
 llms.txt
 llms-full.txt
 .env
+.DS_Store
+.idea/
+.vscode/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+PLAN.md

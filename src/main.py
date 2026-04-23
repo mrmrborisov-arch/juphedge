@@ -8,7 +8,6 @@ Submission to Superteam Earn x Jupiter "Not Your Regular Bounty".
 """
 from __future__ import annotations
 
-import json
 from dataclasses import asdict
 
 from fastapi import FastAPI, HTTPException, Query
@@ -45,6 +44,8 @@ def healthz() -> dict:
 def analyze_endpoint(wallet: str = Query(..., min_length=32, max_length=44)) -> JSONResponse:
     try:
         plan = analyzer.analyze(wallet)
+    except jupiter.RPCScanTooBigError as e:
+        raise HTTPException(status_code=413, detail=str(e))
     except Exception as e:  # noqa: BLE001
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -126,6 +127,12 @@ the combination Jupiter did not explicitly design for.</p>
     <input id="w" placeholder="Solana wallet address" value="3peKKmQYfYCtnLDci8aDqadmjEFArtLuijEBR9ceoWPz">
     <button id="go">Scan &amp; hedge</button>
   </div>
+  <div style="margin-top:10px;font-size:12px;color:#9aa0ac">
+    Try:
+    <a href="#" data-w="3peKKmQYfYCtnLDci8aDqadmjEFArtLuijEBR9ceoWPz">tiny SOL wallet (builder)</a> ·
+    <a href="#" data-w="GThUX1Atko4tqhN2NaiTazWSeFWMuiUvfFnyJyUghFMJ">GThUX… (active trader)</a> ·
+    <a href="#" data-w="5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1">5Q54… (Kraken hot wallet)</a>
+  </div>
 </div>
 
 <div id="out" class="card" style="display:none"></div>
@@ -138,6 +145,7 @@ the combination Jupiter did not explicitly design for.</p>
 
 <script>
 const go=document.getElementById("go"), out=document.getElementById("out"), w=document.getElementById("w");
+document.querySelectorAll("a[data-w]").forEach(a=>a.onclick=e=>{e.preventDefault();w.value=a.dataset.w;go.click();});
 go.onclick=async()=>{
   go.disabled=true; out.style.display="block"; out.innerHTML="<div class='trace'>Scanning…</div>";
   try{

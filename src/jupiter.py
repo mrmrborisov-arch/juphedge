@@ -179,6 +179,10 @@ def lend_earn_tokens() -> list[dict[str, Any]]:
 
 
 # ---------------- Solana RPC (needed for wallet-scan) ----------------
+class RPCScanTooBigError(RuntimeError):
+    """Raised when the wallet has too many accounts to scan via public RPC."""
+
+
 def solana_rpc(method: str, params: list[Any], retries: int = 2) -> Any:
     last_err: Exception | None = None
     for attempt in range(retries + 1):
@@ -195,8 +199,17 @@ def solana_rpc(method: str, params: list[Any], retries: int = 2) -> Any:
             r.raise_for_status()
             body = r.json()
             if "error" in body:
-                raise RuntimeError(f"RPC error: {body['error']}")
+                err = body["error"]
+                msg = str(err)
+                if "scan" in msg.lower() and "limit" in msg.lower():
+                    raise RPCScanTooBigError(
+                        "Wallet has too many token accounts for the public RPC to scan. "
+                        "Paid Solana RPC (Helius/QuickNode) would be needed for this wallet."
+                    )
+                raise RuntimeError(f"RPC error: {err}")
             return body.get("result")
+        except RPCScanTooBigError:
+            raise
         except httpx.HTTPError as e:
             last_err = e
             time.sleep(0.8 * (attempt + 1))

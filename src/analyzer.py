@@ -177,7 +177,14 @@ def analyze(wallet: str) -> HedgePlan:
         earns = jup.lend_earn_tokens() or []
         best = None
         for e in earns:
-            mint = e.get("asset") or e.get("mint")
+            raw = e.get("asset") or e.get("mint")
+            # Sometimes the "asset" field is a nested object with a `mint` key.
+            if isinstance(raw, dict):
+                mint = raw.get("mint") or raw.get("address") or raw.get("id") or ""
+            else:
+                mint = raw or ""
+            if not isinstance(mint, str):
+                continue
             if mint in STABLES:
                 apy = float(e.get("apy") or e.get("supplyApy") or 0)
                 if best is None or apy > best["apy"]:
