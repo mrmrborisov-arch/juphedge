@@ -1,9 +1,13 @@
 # juphedge
 
+[![ci](https://github.com/mrmrborisov-arch/juphedge/actions/workflows/ci.yml/badge.svg)](https://github.com/mrmrborisov-arch/juphedge/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 One-command Solana portfolio hedger that composes **five+ Jupiter APIs** into a
 single structured "hedge plan" for any wallet address.
 
 **Live demo:** https://juphedge-wunclset.fly.dev/
+**Source:** https://github.com/mrmrborisov-arch/juphedge
 
 Type any Solana wallet → get back a plan that covers:
 
